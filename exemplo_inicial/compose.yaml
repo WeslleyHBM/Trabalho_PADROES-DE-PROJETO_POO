@@ -1,0 +1,52 @@
+name: meu-agente
+
+services:
+  # Servidor de inferência e armazenamento dos modelos locais.
+  ollama:
+    image: ollama/ollama:latest
+    container_name: meu-agente-ollama
+    environment:
+      OLLAMA_HOST: "0.0.0.0:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+
+  # Garante que o modelo configurado esteja baixado antes da aplicação iniciar.
+  modelo-init:
+    image: python:3.12.16-slim-bookworm
+    depends_on:
+      ollama:
+        condition: service_started
+    environment:
+      OLLAMA_URL: "http://ollama:11434"
+      OLLAMA_MODEL: "${OLLAMA_MODEL:-qwen2.5:3b}"
+    volumes:
+      - ./scripts:/scripts:ro
+    command: ["python", "/scripts/ensure_model.py"]
+    restart: "no"
+
+  # Aplicação Python, CrewAI e Gradio.
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: meu-agente-app:local
+    container_name: meu-agente-app
+    depends_on:
+      modelo-init:
+        condition: service_completed_successfully
+    environment:
+      OLLAMA_URL: "http://ollama:11434"
+      OLLAMA_BASE_URL: "http://ollama:11434/v1"
+      OLLAMA_MODEL: "${OLLAMA_MODEL:-qwen2.5:3b}"
+      OLLAMA_TIMEOUT: "600"
+      OLLAMA_TEMPERATURE: "0.5"
+    ports:
+      - "7860:7860"
+    volumes:
+      - .:/app
+    command: ["python", "chat.py"]
+    restart: unless-stopped
+
+volumes:
+  ollama_data:

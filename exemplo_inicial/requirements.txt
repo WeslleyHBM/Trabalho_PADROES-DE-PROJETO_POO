@@ -1,0 +1,2 @@
+crewai[openai]==1.15.35
+gradio==6.31.0
