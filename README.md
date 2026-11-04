@@ -198,7 +198,7 @@ Nas sessões de avaliação comparativa em sala de aula, o sistema é testado at
 Desenvolvido pela dupla:
 
 * **[Weslley Menezes]** - `weslley.menezes@acad.ufsm.br` - [GitHub](https://github.com/WeslleyHBM)
-* **[Tales Cruz]** - `email2@inf.ufsm.br` - [GitHub]([https://github.com/Talescruzs)
+* **[Tales Cruz]** - `tales.cruz@acad.ufsm.br` - [GitHub](https://github.com/Talescruzs)
 
 **Docente:** Profa. Lisandra Fontoura (UFSM)  
 **Disciplina:** ELC1070 - Análise e Projeto de Sistemas OO (UFSM)
