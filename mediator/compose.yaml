@@ -1,0 +1,48 @@
+name: tutor-mediator
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    environment:
+      OLLAMA_HOST: "0.0.0.0:11434"
+      OLLAMA_NUM_PARALLEL: "1"
+      OLLAMA_MAX_LOADED_MODELS: "1"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+
+  modelo-init:
+    image: python:3.12.16-slim-bookworm
+    depends_on:
+      ollama:
+        condition: service_started
+    environment:
+      OLLAMA_URL: "http://ollama:11434"
+      OLLAMA_MODEL: "${OLLAMA_MODEL:-qwen2.5:3b}"
+    volumes:
+      - ./scripts:/scripts:ro
+    command: ["python", "/scripts/ensure_model.py"]
+    restart: "no"
+
+  app:
+    profiles: ["cli"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: tutor-mediator-app:local
+    depends_on:
+      modelo-init:
+        condition: service_completed_successfully
+    environment:
+      OLLAMA_BASE_URL: "http://ollama:11434/v1"
+      OLLAMA_MODEL: "${OLLAMA_MODEL:-qwen2.5:3b}"
+      OLLAMA_TIMEOUT: "${OLLAMA_TIMEOUT:-300}"
+      OLLAMA_TEMPERATURE: "${OLLAMA_TEMPERATURE:-0.2}"
+      OLLAMA_MAX_HISTORY_TURNS: "${OLLAMA_MAX_HISTORY_TURNS:-3}"
+    stdin_open: true
+    tty: true
+    init: true
+    restart: "no"
+
+volumes:
+  ollama_data:
