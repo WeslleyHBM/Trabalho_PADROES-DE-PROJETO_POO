@@ -38,8 +38,27 @@ def _pedido_de_solucao_pronta(texto: str) -> bool:
         or (re.search(pedido_direto, texto) and re.search(r"\b(codigo|solucao)\b", texto) and re.search(r"\b(completo|completa|pronto|pronta)\b", texto))
     )
 
+def _saudacao_simples(texto: str) -> bool:
+    texto = normalizar(texto)
+    
+    if len(texto) > 120:
+        return False
+        
+    saudacoes = r"\b(oi|ola|bom dia|boa tarde|boa noite|tudo bem|eae|meu nome e|sou o)\b"
+
+    dominio = r"\b(mediator|padrao|pattern|ensina|explica|ajuda|duvida|codigo|java|exemplo|observer|como|o que e|qual)\b"
+    
+
+    return bool(re.search(saudacoes, texto)) and not bool(re.search(dominio, texto))
 
 def resposta_de_seguranca(pergunta: str) -> str | None:
+    if _saudacao_simples(pergunta):
+        return (
+            "Olá! Sou o tutor pedagógico do padrão Mediator. Como posso ajudar "
+            "você a entender esse padrão hoje? Você pode me perguntar sobre o "
+            "conceito, pedir um exemplo em Java, ou comparar com outros padrões."
+        )
+
     if _pedido_de_inventar_padrao(pergunta):
         return (
             "Não vou apresentar um padrão inventado como se fosse parte do catálogo GoF. "

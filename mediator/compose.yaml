@@ -39,6 +39,7 @@ services:
       OLLAMA_TIMEOUT: "${OLLAMA_TIMEOUT:-300}"
       OLLAMA_TEMPERATURE: "${OLLAMA_TEMPERATURE:-0.2}"
       OLLAMA_MAX_HISTORY_TURNS: "${OLLAMA_MAX_HISTORY_TURNS:-3}"
+      CREWAI_TRACING_ENABLED: "false"
     stdin_open: true
     tty: true
     init: true

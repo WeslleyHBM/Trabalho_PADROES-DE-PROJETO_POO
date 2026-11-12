@@ -68,9 +68,9 @@ def main() -> None:
     wait_for_ollama()
     if model_is_installed():
         print(f"Modelo {MODEL} já está instalado.", flush=True)
-        return
+        sys.exit(0)
     pull_model()
-
+    sys.exit(0)
 
 if __name__ == "__main__":
     try:
